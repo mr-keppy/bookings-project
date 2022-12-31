@@ -1,8 +1,8 @@
 package main
 
 import (
-	"github.com/mr-keppy/bookings/pkg/config"
-	"github.com/mr-keppy/bookings/pkg/handlers"
+	"github.com/mr-keppy/bookings/internal/config"
+	"github.com/mr-keppy/bookings/internal/handlers"
 	"net/http"
 
 	"github.com/go-chi/chi"
@@ -27,10 +27,12 @@ func routes(app *config.AppConfig) http.Handler{
 	mux.Get("/generals-quarters",handlers.Repo.Generals)
 	mux.Get("/majors-suite",handlers.Repo.Majors)
 	mux.Get("/make-reservation",handlers.Repo.Reservations)
+	mux.Post("/make-reservation",handlers.Repo.PostReservations)
 	mux.Get("/search-availability",handlers.Repo.Avilability)
 	mux.Post("/search-availability",handlers.Repo.PostAvilability)
-	mux.Get("/search-availability-json",handlers.Repo.PostAvilabilityJSON)
+	mux.Post("/search-availability-json",handlers.Repo.PostAvilabilityJSON)
 	mux.Get("/contacts",handlers.Repo.Contacts)
+	mux.Get("/reservation-summary",handlers.Repo.ReservationSummary)
 
 	fileServer:= http.FileServer(http.Dir("./static/"))
 	mux.Handle("/static/*", http.StripPrefix("/static",fileServer))

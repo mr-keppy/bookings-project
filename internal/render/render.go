@@ -9,8 +9,8 @@ import (
 	"path/filepath"
 
 	"github.com/justinas/nosurf"
-	"github.com/mr-keppy/bookings/pkg/config"
-	"github.com/mr-keppy/bookings/pkg/models"
+	"github.com/mr-keppy/bookings/internal/config"
+	"github.com/mr-keppy/bookings/internal/models"
 )
 
 //RenderTemplate renders using html template
@@ -33,6 +33,9 @@ func NewTemplates(a *config.AppConfig){
 }
 
 func AddDefaultData(td *models.TemplateData, r *http.Request) *models.TemplateData{
+	td.Flash = app.Session.PopString(r.Context(),"flash")
+	td.Error = app.Session.PopString(r.Context(),"error")
+	td.Warning = app.Session.PopString(r.Context(),"warning")
 	td.CSRFToken = nosurf.Token(r)
 	return td
 }

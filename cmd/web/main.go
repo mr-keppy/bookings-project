@@ -1,12 +1,15 @@
 package main
 
 import (
-	"github.com/mr-keppy/bookings/pkg/config"
-	"github.com/mr-keppy/bookings/pkg/handlers"
-	"github.com/mr-keppy/bookings/pkg/render"
+	"encoding/gob"
 	"log"
 	"net/http"
 	"time"
+
+	"github.com/mr-keppy/bookings/internal/config"
+	"github.com/mr-keppy/bookings/internal/handlers"
+	"github.com/mr-keppy/bookings/internal/models"
+	"github.com/mr-keppy/bookings/internal/render"
 
 	"github.com/alexedwards/scs/v2"
 )
@@ -19,7 +22,8 @@ var session *scs.SessionManager
 //this is main
 
 func main() {
-
+	// what going to store in session
+	gob.Register(models.Reservation{})
 	app.InProduction = false
 
 	session = scs.New()

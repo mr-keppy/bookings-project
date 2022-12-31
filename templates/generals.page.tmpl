@@ -2,26 +2,80 @@
 
 {{define "content"}}
 <div class="container">
-        
+
     <div class="row">
         <div class="col-lg-12 col-md-3 col-sm-3 col-xs-12">
-            <img src="/static/images/generals-quarters.png" class="img-fluid image-thumbnail mx-auto d-block room-image" alt="room image">
+            <img src="/static/images/generals-quarters.png" class="img-fluid image-thumbnail mx-auto d-block room-image"
+                alt="room image">
         </div>
     </div>
     <div class="row">
         <div class="col">
             <h1 class="text-center mt-4">General Suite</h1>
-            <p>Your home is away from home. Book your Bangalore stay at Home Away Home - a complete 1bhk with full kitchen at KR Puram Bangalore with best prices only on this.
-                Your home is away from home. Book your Bangalore stay at Home Away Home - a complete 1bhk with full kitchen at KR Puram Bangalore with best prices only on this.
-                Your home is away from home. Book your Bangalore stay at Home Away Home - a complete 1bhk with full kitchen at KR Puram Bangalore with best prices only on this.
-                Your home is away from home. Book your Bangalore stay at Home Away Home - a complete 1bhk with full kitchen at KR Puram Bangalore with best prices only on this.
-                Your home is away from home. Book your Bangalore stay at Home Away Home - a complete 1bhk with full kitchen at KR Puram Bangalore with best prices only on this. Hurry!</p>
+            <p>Your home is away from home. Book your Bangalore stay at Home Away Home - a complete 1bhk with full
+                kitchen at KR Puram Bangalore with best prices only on this.
+                Your home is away from home. Book your Bangalore stay at Home Away Home - a complete 1bhk with full
+                kitchen at KR Puram Bangalore with best prices only on this.
+                Your home is away from home. Book your Bangalore stay at Home Away Home - a complete 1bhk with full
+                kitchen at KR Puram Bangalore with best prices only on this.
+                Your home is away from home. Book your Bangalore stay at Home Away Home - a complete 1bhk with full
+                kitchen at KR Puram Bangalore with best prices only on this.
+                Your home is away from home. Book your Bangalore stay at Home Away Home - a complete 1bhk with full
+                kitchen at KR Puram Bangalore with best prices only on this. Hurry!</p>
         </div>
     </div>
     <div class="row">
         <div class="col text-center">
-            <a class="check-availability" href="#!" class="btn btn-warning">Check Rooms</a>
+            <a href="#!" name="check_availability" id="check_availability" class="btn btn-warning">Check Rooms</a>
         </div>
     </div>
 </div>
+{{end}}
+{{define "js"}}
+<script>
+    let html = `
+        <form id="check-availability-form" action="" method="post" novalidate class="needs-validation">
+            <div class="row">
+                <div class="col">
+                    <div class="row" id="reservation-dates-modal">
+                        <div class="col">
+                                <input required class="form-control" type="date" name="start_date" id="start_date" placeholder="Arrival"/>
+                        </div>
+                        <div class="col">
+                                <input required class="form-control" type="date" name="end_date" id="end_date" placeholder="Departure"/>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+        `
+    document.getElementById("check_availability").addEventListener("click", function () {
+
+        attention.custom({
+            msg: html,
+            title: "Choose your dates",
+
+            willOpen: () => {
+                const elem = document.getElementById("reservation-date-modal");
+            },
+
+            callback: function (result) {
+                console.log("call back");
+
+                let form = document.getElementById("check-availability-form")
+                let formData = new FormData(form);
+                formData.append("csrf_token", "{{.CSRFToken}}");
+
+                fetch('/search-availability-json', {
+                    method: "post",
+                    body: formData,
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        console.log(data);
+                    })
+            }
+        })
+    })
+</script>
 {{end}}

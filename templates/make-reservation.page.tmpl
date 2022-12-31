@@ -6,22 +6,43 @@
     <div class="row">
         <div class="col">
             <h1> Make Reservation</h1>
-            <form method="post" action="" class="needs-validation" novalidate>
+
+            {{$res := index .Data "reservation"}}
+            <form method="post" action="/make-reservation" novalidate>
+
+                <input type="hidden" name="csrf_token" value="{{.CSRFToken}}" />
+
                 <div class="mb-3">
                     <label for="first_name" class="form-label">First Name</label>
-                    <input type="text" class="form-control" id="first_name" placeholder="eg: Kishor">
+                    {{with .Form.Errors.Get "first_name"}}
+                        <label class="text-danger">{{.}}</label>
+                    {{end}}
+                    <input type="text" required value="{{$res.FirstName}}" class="form-control{{with .Form.Errors.Get "first_name"}} is-invalid{{end}}" id="first_name" name="first_name" placeholder="eg: Kishor">
                 </div>
                 <div class="mb-3">
                     <label for="last_name" class="form-label">Last Name</label>
-                    <input type="text" class="form-control" id="last_name" placeholder="eg: Padmanabhan">
+                    {{with .Form.Errors.Get "last_name"}}
+                    <label class="text-danger">{{.}}</label>
+                    {{end}}
+                    <input type="text" required value="{{$res.LastName}}" class="form-control{{with .Form.Errors.Get "last_name"}} is-invalid{{end}}" name="last_name"
+                        id="last_name" placeholder="eg: Padmanabhan">
                 </div>
                 <div class="mb-3">
+
                     <label for="email" class="form-label">Email</label>
-                    <input type="email" class="form-control" id="email" placeholder="eg: kishor338@gmail.com">
+                    {{with .Form.Errors.Get "email"}}
+                    <label class="text-danger">{{.}}</label>
+                    {{end}}
+                    <input type="email" required value="{{$res.Email}}" class="form-control{{with .Form.Errors.Get "email"}} is-invalid{{end}}" name="email" id="email"
+                        placeholder="eg: kishor338@gmail.com">
                 </div>
                 <div class="mb-3">
-                    <label for="phone_number" class="form-label">Phone Number</label>
-                    <input type="text" class="form-control" id="phone_number" placeholder="eg: 9947766456">
+                    <label for="phone" class="form-label">Phone Number</label> 
+                    {{with .Form.Errors.Get "phone"}}
+                    <label class="text-danger">{{.}}</label>
+                    {{end}}
+                    <input type="text" required value="{{$res.Phone}}" class="form-control{{with .Form.Errors.Get "phone"}} is-invalid{{end}}" name="phone" id="phone"
+                        placeholder="eg: 9947766456">
                 </div>
                 <div class="col-12">
                     <button type="submit" class="btn btn-primary">Make Reservation</button>
