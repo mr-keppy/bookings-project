@@ -8,6 +8,7 @@ import (
 
 	"github.com/mr-keppy/bookings/internal/config"
 	"github.com/mr-keppy/bookings/internal/forms"
+	"github.com/mr-keppy/bookings/internal/helpers"
 	"github.com/mr-keppy/bookings/internal/models"
 	"github.com/mr-keppy/bookings/internal/render"
 )
@@ -57,9 +58,8 @@ func (m *Repository) Reservations(w http.ResponseWriter, r *http.Request) {
 func (m *Repository) PostReservations(w http.ResponseWriter, r *http.Request) {
 
 	err := r.ParseForm()
-
 	if err != nil {
-		log.Println(err)
+		helpers.ServerError(w, err)
 		return
 	}
 
@@ -182,7 +182,8 @@ func( m *Repository) ReservationSummary(w http.ResponseWriter, r *http.Request){
 	reservation, ok := m.App.Session.Get(r.Context(),"reservation").(models.Reservation)
 
 	if !ok{
-			log.Println("cannot get item from session")
+			//log.Println("cannot get item from session")
+			// helpers.ServerError(w,errors.New("cannot get item from session"))
 			m.App.Session.Put(r.Context(), "error","Can't get reservation from session")
 			http.Redirect(w,r,"/",http.StatusTemporaryRedirect)
 			return

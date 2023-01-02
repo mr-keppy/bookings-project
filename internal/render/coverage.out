@@ -1,0 +1,26 @@
+mode: set
+github.com/mr-keppy/bookings/internal/render/render.go:18.62,23.16 3 0
+github.com/mr-keppy/bookings/internal/render/render.go:23.16,26.3 2 0
+github.com/mr-keppy/bookings/internal/render/render.go:31.40,33.2 1 1
+github.com/mr-keppy/bookings/internal/render/render.go:35.84,41.2 5 1
+github.com/mr-keppy/bookings/internal/render/render.go:43.105,47.18 2 1
+github.com/mr-keppy/bookings/internal/render/render.go:53.2,54.9 2 1
+github.com/mr-keppy/bookings/internal/render/render.go:59.2,66.16 5 1
+github.com/mr-keppy/bookings/internal/render/render.go:71.2,71.12 1 1
+github.com/mr-keppy/bookings/internal/render/render.go:47.18,49.3 1 0
+github.com/mr-keppy/bookings/internal/render/render.go:49.8,51.3 1 1
+github.com/mr-keppy/bookings/internal/render/render.go:54.9,57.3 1 1
+github.com/mr-keppy/bookings/internal/render/render.go:66.16,69.3 2 0
+github.com/mr-keppy/bookings/internal/render/render.go:75.67,81.16 3 1
+github.com/mr-keppy/bookings/internal/render/render.go:86.2,86.29 1 1
+github.com/mr-keppy/bookings/internal/render/render.go:108.2,108.21 1 1
+github.com/mr-keppy/bookings/internal/render/render.go:81.16,83.3 1 0
+github.com/mr-keppy/bookings/internal/render/render.go:86.29,89.17 3 1
+github.com/mr-keppy/bookings/internal/render/render.go:93.3,94.17 2 1
+github.com/mr-keppy/bookings/internal/render/render.go:98.3,98.23 1 1
+github.com/mr-keppy/bookings/internal/render/render.go:102.3,102.17 1 1
+github.com/mr-keppy/bookings/internal/render/render.go:106.3,106.21 1 1
+github.com/mr-keppy/bookings/internal/render/render.go:89.17,91.4 1 0
+github.com/mr-keppy/bookings/internal/render/render.go:94.17,96.4 1 0
+github.com/mr-keppy/bookings/internal/render/render.go:98.23,100.4 1 1
+github.com/mr-keppy/bookings/internal/render/render.go:102.17,104.4 1 0

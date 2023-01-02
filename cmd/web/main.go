@@ -4,10 +4,12 @@ import (
 	"encoding/gob"
 	"log"
 	"net/http"
+	"os"
 	"time"
 
 	"github.com/mr-keppy/bookings/internal/config"
 	"github.com/mr-keppy/bookings/internal/handlers"
+	"github.com/mr-keppy/bookings/internal/helpers"
 	"github.com/mr-keppy/bookings/internal/models"
 	"github.com/mr-keppy/bookings/internal/render"
 
@@ -18,11 +20,18 @@ const portNumber = ":8080"
 
 var app config.AppConfig
 var session *scs.SessionManager
+var infoLog *log.Logger
+var errorLog *log.Logger
 
 //this is main
 func run() error{
 	gob.Register(models.Reservation{})
 	app.InProduction = false
+
+	infoLog = log.New(os.Stdout, "INFO\t",log.Ldate | log.Ltime)
+	app.InfoLog = infoLog
+	errorLog = log.New(os.Stdout,"ERROR\t",log.Ldate | log.Ltime| log.Lshortfile)
+	app.ErrorLog = errorLog
 
 	session = scs.New()
 
@@ -46,7 +55,8 @@ func run() error{
 	handlers.NewHandler(repo)
 
 	render.NewTemplates(&app)
-
+	helpers.NewHelpers(&app)
+	
 	//http.HandleFunc("/", handlers.Repo.Home)
 	//http.HandleFunc("/about", handlers.Repo.About)
 	return nil

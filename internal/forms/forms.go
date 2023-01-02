@@ -32,7 +32,7 @@ func New(data url.Values) *Form{
 }
 
 func (f *Form) Has(field string, r *http.Request) bool{
-	x:= r.Form.Get(field)
+	x:= f.Get(field)
 	if x==""{
 		return false
 	}
@@ -46,7 +46,7 @@ func (f *Form) Valid() bool{
 
 // check min length
 func (f *Form) MinLength(field string, length int, r *http.Request) bool {
-	x:= r.Form.Get(field)
+	x:= f.Get(field)
 
 	if len(x)<length{
 		f.Errors.Add(field,fmt.Sprintf("this field must be at least %d characters long",length))
