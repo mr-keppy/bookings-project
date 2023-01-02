@@ -20,9 +20,7 @@ var app config.AppConfig
 var session *scs.SessionManager
 
 //this is main
-
-func main() {
-	// what going to store in session
+func run() error{
 	gob.Register(models.Reservation{})
 	app.InProduction = false
 
@@ -39,10 +37,11 @@ func main() {
 
 	if err != nil {
 		log.Fatal(err)
+		return err
 	}
 
 	app.TemplateCache = tc
-	app.UseCache = true
+	app.UseCache = false
 	repo := handlers.NewRepo(&app)
 	handlers.NewHandler(repo)
 
@@ -50,7 +49,19 @@ func main() {
 
 	//http.HandleFunc("/", handlers.Repo.Home)
 	//http.HandleFunc("/about", handlers.Repo.About)
+	return nil
+}
 
+func main() {
+
+	err:= run()
+
+	if(err != nil){
+		log.Fatal(err)
+	}
+	// what going to store in session
+
+	
 	srv := &http.Server{
 		Addr:    portNumber,
 		Handler: routes(&app),
