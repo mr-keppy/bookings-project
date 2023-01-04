@@ -37,10 +37,10 @@ func (m *postgreDBRepo) InsertRoomRestriction(res models.RoomRestriction) (int, 
 	
 	var newID int
 
-	stmt := `insert into roomrestrictions (start_date, end_date, reservation_id, room_id, created_at, updated_at)
-			values($1, $2, $3, $4, $5, $6) returning id`
+	stmt := `insert into room_restrictions (start_date, end_date, restriction_id, reservation_id, room_id, created_at, updated_at)
+			values($1, $2, $3, $4, $5, $6, $7) returning id`
 
-	err := m.DB.QueryRowContext(ctx, stmt, res.StartDate, res.EndDate, res.ReservationID, res.RoomID, time.Now(), time.Now()).Scan(&newID)
+	err := m.DB.QueryRowContext(ctx, stmt, res.StartDate, res.EndDate,res.RestrictionID, res.ReservationID, res.RoomID, time.Now(), time.Now()).Scan(&newID)
 
 	if err != nil {
 		return 0, err
