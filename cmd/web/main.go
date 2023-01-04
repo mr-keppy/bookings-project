@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/mr-keppy/bookings/internal/config"
+	"github.com/mr-keppy/bookings/internal/driver"
 	"github.com/mr-keppy/bookings/internal/handlers"
 	"github.com/mr-keppy/bookings/internal/helpers"
 	"github.com/mr-keppy/bookings/internal/models"
@@ -24,8 +25,13 @@ var infoLog *log.Logger
 var errorLog *log.Logger
 
 //this is main
-func run() error{
+func run() (*driver.DB, error){
 	gob.Register(models.Reservation{})
+	gob.Register(models.User{})
+	gob.Register(models.Restriction{})
+	gob.Register(models.RoomRestriction{})
+	gob.Register(models.Room{})
+
 	app.InProduction = false
 
 	infoLog = log.New(os.Stdout, "INFO\t",log.Ldate | log.Ltime)
@@ -41,36 +47,45 @@ func run() error{
 	session.Cookie.Secure = app.InProduction
 
 	app.Session = session
-	
+
+	//connect to db
+	log.Println("connect to db")
+	db, err := driver.ConnectSQL("host=localhost port=5432 dbname=bookings user=kishorpadmanabhan password=")
+	if err != nil {
+		log.Fatal("Error while connecting db")
+	}
+	log.Println("connected to database")
+
 	tc, err := render.CreateTemplateCache()
 
 	if err != nil {
 		log.Fatal(err)
-		return err
+		return nil, err
 	}
 
 	app.TemplateCache = tc
 	app.UseCache = false
-	repo := handlers.NewRepo(&app)
+	repo := handlers.NewRepo(&app, db)
 	handlers.NewHandler(repo)
 
-	render.NewTemplates(&app)
+	render.NewRenderer(&app)
 	helpers.NewHelpers(&app)
 	
 	//http.HandleFunc("/", handlers.Repo.Home)
 	//http.HandleFunc("/about", handlers.Repo.About)
-	return nil
+	return db, nil
 }
 
 func main() {
 
-	err:= run()
+	db, err:= run()
 
 	if(err != nil){
 		log.Fatal(err)
 	}
 	// what going to store in session
 
+	defer db.SQL.Close()
 	
 	srv := &http.Server{
 		Addr:    portNumber,
@@ -80,4 +95,5 @@ func main() {
 	log.Fatal(err)
 	// fmt.Println((fmt.Sprintf("Starting applicaiton on port #:%d", portNumber)))
 	//_ = http.ListenAndServe(portNumber, nil)
+
 }

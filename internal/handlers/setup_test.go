@@ -15,6 +15,7 @@ import (
 	"github.com/go-chi/chi/middleware"
 	"github.com/justinas/nosurf"
 	"github.com/mr-keppy/bookings/internal/config"
+	"github.com/mr-keppy/bookings/internal/driver"
 	"github.com/mr-keppy/bookings/internal/models"
 	"github.com/mr-keppy/bookings/internal/render"
 )
@@ -45,7 +46,10 @@ func getRoutes() http.Handler{
 	session.Cookie.Secure = app.InProduction
 
 	app.Session = session
-	
+	db, err := driver.ConnectSQL("host=localhost port=5432 dbname=bookings user=kishorpadmanabhan password=")
+	if err != nil {
+		log.Fatal("Error while connecting db")
+	}
 	tc, err := CreateTestTemplateCache()
 
 	if err != nil {
@@ -57,10 +61,10 @@ func getRoutes() http.Handler{
 
 	app.TemplateCache = tc
 	app.UseCache = true
-	repo := NewRepo(&app)
+	repo := NewRepo(&app,db)
 	NewHandler(repo)
 
-	render.NewTemplates(&app)
+	render.NewRenderer(&app)
 
 	//http.HandleFunc("/", handlers.Repo.Home)
 	//http.HandleFunc("/about", handlers.Repo.About)

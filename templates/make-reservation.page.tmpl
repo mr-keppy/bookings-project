@@ -29,6 +29,24 @@
                 </div>
                 <div class="mb-3">
 
+                    <label for="start_date" class="form-label">Start Date</label>
+                    {{with .Form.Errors.Get "start_date"}}
+                    <label class="text-danger">{{.}}</label>
+                    {{end}}
+                    <input type="date" required value="{{$res.start_date}}" class="form-control{{with .Form.Errors.Get "start_date"}} is-invalid{{end}}" name="start_date" id="start_date"
+                        placeholder="eg: 2020-01-02">
+                </div>
+                <div class="mb-3">
+
+                    <label for="end_date" class="form-label">End Date</label>
+                    {{with .Form.Errors.Get "end_date"}}
+                    <label class="text-danger">{{.}}</label>
+                    {{end}}
+                    <input type="date" required value="{{$res.end_date}}" class="form-control{{with .Form.Errors.Get "end_date"}} is-invalid{{end}}" name="end_date" id="end_date"
+                    placeholder="eg: 2020-01-02">
+                </div>
+                <div class="mb-3">
+
                     <label for="email" class="form-label">Email</label>
                     {{with .Form.Errors.Get "email"}}
                     <label class="text-danger">{{.}}</label>
@@ -36,6 +54,7 @@
                     <input type="email" required value="{{$res.Email}}" class="form-control{{with .Form.Errors.Get "email"}} is-invalid{{end}}" name="email" id="email"
                         placeholder="eg: kishor338@gmail.com">
                 </div>
+                <input type="hidden" name="room_id" value="1"/>
                 <div class="mb-3">
                     <label for="phone" class="form-label">Phone Number</label> 
                     {{with .Form.Errors.Get "phone"}}
