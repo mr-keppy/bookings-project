@@ -7,10 +7,17 @@
         <div class="col">
             <h1> Make Reservation</h1>
 
+            <p><strong>Reservation Details</strong></p>
+           
             {{$res := index .Data "reservation"}}
+            <p>Room: {{$res.Room.RoomName}}</p>
+            <p>Arrival: {{$res.StartDate}}</p>
+            <p>Departure: {{$res.EndDate}}</p>
             <form method="post" action="/make-reservation" novalidate>
 
                 <input type="hidden" name="csrf_token" value="{{.CSRFToken}}" />
+                <input type="hidden" name="start_date" value="{{index .StringMap "start_date"}}" />
+                <input type="hidden" name="end_date" value="{{index .StringMap "end_date"}}" />
 
                 <div class="mb-3">
                     <label for="first_name" class="form-label">First Name</label>
@@ -26,24 +33,6 @@
                     {{end}}
                     <input type="text" required value="{{$res.LastName}}" class="form-control{{with .Form.Errors.Get "last_name"}} is-invalid{{end}}" name="last_name"
                         id="last_name" placeholder="eg: Padmanabhan">
-                </div>
-                <div class="mb-3">
-
-                    <label for="start_date" class="form-label">Start Date</label>
-                    {{with .Form.Errors.Get "start_date"}}
-                    <label class="text-danger">{{.}}</label>
-                    {{end}}
-                    <input type="date" required value="{{$res.start_date}}" class="form-control{{with .Form.Errors.Get "start_date"}} is-invalid{{end}}" name="start_date" id="start_date"
-                        placeholder="eg: 2020-01-02">
-                </div>
-                <div class="mb-3">
-
-                    <label for="end_date" class="form-label">End Date</label>
-                    {{with .Form.Errors.Get "end_date"}}
-                    <label class="text-danger">{{.}}</label>
-                    {{end}}
-                    <input type="date" required value="{{$res.end_date}}" class="form-control{{with .Form.Errors.Get "end_date"}} is-invalid{{end}}" name="end_date" id="end_date"
-                    placeholder="eg: 2020-01-02">
                 </div>
                 <div class="mb-3">
 

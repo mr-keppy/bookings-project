@@ -140,18 +140,22 @@
             async function custom(c) {
                 const {
                     msg = "",
-                    title = ""
+                    title = "",
+                    icon = "",
+                    showConfirmButton = true
                 } = c;
 
 
                 const { value: result } = await Swal.fire({
+                    icon: icon,
                     title: title,
                     html: msg,
                     backdrop: false,
                     showCancelButton: true,
                     focusConfirm: false,
-                    willOpen:()=>{
-                        if(c.willOpen !==undefined){
+                    showConfirmButton: showConfirmButton,
+                    willOpen: () => {
+                        if (c.willOpen !== undefined) {
                             c.willOpen();
                         }
                     },
@@ -178,9 +182,9 @@
                         c.callback(false);
                     }
                 }
-              //  if (formValues) {
-              //      Swal.fire(JSON.stringify(formValues))
-              //  }
+                //  if (formValues) {
+                //      Swal.fire(JSON.stringify(formValues))
+                //  }
             }
 
 
@@ -230,17 +234,17 @@
             })
         }
 
-        {{with .Error}}
-            notify("{{.}}","error")
-        {{end}}
+        { { with .Error} }
+        notify("{{.}}", "error")
+        { { end } }
 
-        {{with .Flash}}
-            notify("{{.}}","success")
-        {{end}}
+        { { with .Flash} }
+        notify("{{.}}", "success")
+        { { end } }
 
-        {{with .Warning}}
-            notify("{{.}}","warning")
-        {{end}}
+        { { with .Warning} }
+        notify("{{.}}", "warning")
+        { { end } }
 
     </script>
     {{block "js" .}}
