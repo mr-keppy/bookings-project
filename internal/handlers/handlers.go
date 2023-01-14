@@ -3,6 +3,7 @@ package handlers
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"log"
 	"net/http"
 	"strconv"
@@ -48,12 +49,54 @@ func NewHandler(r *Repository) {
 	Repo = r
 }
 
+// login screen
+func (m *Repository) ShowLogin(w http.ResponseWriter, r *http.Request) {
+	render.Template(w, r, "login.page.tmpl", &models.TemplateData{})
+}
+// login screen
+func (m *Repository) PostShowLogin(w http.ResponseWriter, r *http.Request) {
+	
+	_ = m.App.Session.RenewToken(r.Context())
+
+	err := r.ParseForm()
+
+	if err!=nil{
+		log.Println(err)
+	}
+
+	email:= r.Form.Get("email")
+	password:= r.Form.Get("password")
+
+	form := forms.New(r.PostForm)
+
+	form.Required("email","password")
+
+	if !form.Valid(){
+		// to do
+	}
+
+	id, _, err := m.DB.Authenticate(email,password)
+	if err!=nil{
+		log.Println(err)
+		m.App.Session.Put(r.Context(),"error","invalid user input")
+		http.Redirect(w, r, "/user/login",http.StatusSeeOther)
+		return
+	}
+
+	m.App.Session.Put(r.Context(),"user_id",id)
+	m.App.Session.Put(r.Context(),"flash","login successfully")
+	http.Redirect(w, r, "/",http.StatusSeeOther)
+
+}
+
 // Home page is the home handler
 func (m *Repository) Home(w http.ResponseWriter, r *http.Request) {
 	remoteIP := r.RemoteAddr
 	m.App.Session.Put(r.Context(), "remote_ip", remoteIP)
 
-	render.Template(w, r, "home.page.tmpl", &models.TemplateData{})
+	render.Template(w, r, "home.page.tmpl", &models.TemplateData{
+		Form: forms.New(nil),
+	})
 
 }
 
@@ -192,6 +235,24 @@ func (m *Repository) PostReservations(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	//send notificaitons - first to guest
+
+	htmlMessage := fmt.Sprintf(`
+	<strong> Reservation Confirmation <strong><br>
+
+	Dear %s:, <br>
+	This is confirm your reservation from %s to %s.
+	`, reservation.FirstName, reservation.StartDate.Format("2000-01-01"), reservation.EndDate.Format("2000-01-01"))
+
+	msg := models.MailData{
+		To: reservation.Email,
+		From: "me@here.com",
+		Subject: "Reservation Confirmation",
+		Content: htmlMessage,
+	}
+
+	m.App.MailChan <- msg
+	
 	m.App.Session.Put(r.Context(),"reservation",reservation)
 	
 	http.Redirect(w, r, "/reservation-summary", http.StatusSeeOther)

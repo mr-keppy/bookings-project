@@ -33,6 +33,8 @@ func run() (*driver.DB, error){
 	gob.Register(models.Room{})
 
 	app.InProduction = false
+	mailChan := make(chan models.MailData)
+	app.MailChan = mailChan
 
 	infoLog = log.New(os.Stdout, "INFO\t",log.Ldate | log.Ltime)
 	app.InfoLog = infoLog
@@ -86,7 +88,18 @@ func main() {
 	// what going to store in session
 
 	defer db.SQL.Close()
-	
+	defer  close(app.MailChan)
+
+	listenForMail()
+
+	//msg:= models.MailData{
+	//	To: "kishor.padmanabhan@thoughtworks.com",
+	//	From: "kishor338@gmail.com",
+	//	Subject: "test email",
+	//	Content: "Hello <b>Test</b>",
+	//}
+	//app.MailChan <- msg
+
 	srv := &http.Server{
 		Addr:    portNumber,
 		Handler: routes(&app),
