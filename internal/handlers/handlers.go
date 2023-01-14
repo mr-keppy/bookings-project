@@ -35,6 +35,14 @@ func NewRepo(a *config.AppConfig, db *driver.DB) *Repository {
 		DB: dbrepo.NewPostgresRepo(db.SQL,a),
 	}
 }
+// Create new Test Repo
+func NewTestRepo(a *config.AppConfig, db *driver.DB) *Repository {
+
+	return &Repository{
+		App: a,
+		DB: dbrepo.NewTestingRepo(db.SQL,a),
+	}
+}
 
 func NewHandler(r *Repository) {
 	Repo = r
@@ -207,7 +215,36 @@ func (m *Repository) Avilability(w http.ResponseWriter, r *http.Request) {
 	render.Template(w, r, "search-availability.page.tmpl", &models.TemplateData{})
 
 }
+// book room
+func (m *Repository) BookRoom(w http.ResponseWriter, r *http.Request) {
+	roomID,  _ := strconv.Atoi(r.URL.Query().Get("id"))
+	sd := r.URL.Query().Get("s")
+	ed := r.URL.Query().Get("e")
 
+
+	layout:= "2021-01-01"
+
+	startDate,_ := time.Parse(layout,sd)
+	endDate,_ := time.Parse(layout,ed)
+	var res models.Reservation
+
+	room, err := m.DB.GetRoomByID(res.RoomID)
+
+	if err!=nil{
+		helpers.ServerError(w, err)
+		return
+	}
+	
+	res.Room.RoomName = room.RoomName
+	res.RoomID = roomID
+	res.StartDate = startDate
+	res.EndDate = endDate
+
+	m.App.Session.Put(r.Context(),"reservation", res)
+	
+	http.Redirect(w, r,"/make-reservation", http.StatusSeeOther)
+	
+}
 // Post Avilability page is the major handler
 func (m *Repository) PostAvilability(w http.ResponseWriter, r *http.Request) {
 

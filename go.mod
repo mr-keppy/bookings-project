@@ -4,6 +4,8 @@ go 1.19
 
 require github.com/jackc/pgconn v1.13.0
 
+require github.com/xhit/go-simple-mail v2.2.2+incompatible // indirect
+
 require (
 	github.com/alexedwards/scs/v2 v2.5.0 // indirect
 	github.com/asaskevich/govalidator v0.0.0-20210307081110-f21760c49a8d // indirect

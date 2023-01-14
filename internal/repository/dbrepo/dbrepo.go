@@ -12,8 +12,19 @@ type postgreDBRepo struct{
 	DB *sql.DB
 }
 
-func NewPostgresRepo(conn *sql.DB, a *config.AppConfig) repository.DatabaseRepo {
+type testDBRepo struct{
+	App *config.AppConfig
+	DB *sql.DB
+}
+func NewTestingRepo(conn *sql.DB, a *config.AppConfig) repository.DatabaseRepo {
 	return &postgreDBRepo{
+		App: a,
+		DB: conn,
+	}
+}
+
+func NewPostgresRepo(conn *sql.DB, a *config.AppConfig) repository.DatabaseRepo {
+	return &testDBRepo{
 		App: a,
 		DB: conn,
 	}
