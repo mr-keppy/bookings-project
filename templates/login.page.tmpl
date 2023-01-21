@@ -2,20 +2,25 @@
 
 {{define "content"}}
 <div class="container">
-        <h1>Login </h1>
+    <h1>Login </h1>
+    <form method="post" action="/user/login">
         <input type="hidden" name="csrf_token" value="{{.CSRFToken}}" />
-    <div class="row">
-        <div class="col">
-            <div class="mb-3">
-                <label for="email" class="form-label">Email</label>
-                <input type="text" required value="" class="form-control" id="email" name="email" placeholder="eg: email@domain.com">
-            </div>
-            <div class="mb-3">
-                <label for="password" class="form-label">Password</label>
-                <input type="password" required value="" class="form-control" name="password"
-                    id="password" placeholder="eg: *****">
+        <div class="row">
+            <div class="col">
+                <div class="mb-3">
+                    <label for="email" class="form-label">Email</label>
+                    <input type="text" required value="" class="form-control" id="email" name="email"
+                        placeholder="eg: email@domain.com">
+                </div>
+                <div class="mb-3">
+                    <label for="password" class="form-label">Password</label>
+                    <input type="password" required value="" class="form-control" name="password" id="password"
+                        placeholder="eg: *****">
+                </div>
             </div>
         </div>
-    </div>
+        <hr>
+        <input type="submit" class="btn btn-primary" value="Submit"/>
+    </form>
 </div>
 {{end}}

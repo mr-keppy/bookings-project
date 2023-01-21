@@ -51,9 +51,11 @@ func NewHandler(r *Repository) {
 
 // login screen
 func (m *Repository) ShowLogin(w http.ResponseWriter, r *http.Request) {
-	render.Template(w, r, "login.page.tmpl", &models.TemplateData{})
+	render.Template(w, r, "login.page.tmpl", &models.TemplateData{
+		Form: forms.New(nil),
+	})
 }
-// login screen
+// login screen validation
 func (m *Repository) PostShowLogin(w http.ResponseWriter, r *http.Request) {
 	
 	_ = m.App.Session.RenewToken(r.Context())
@@ -72,7 +74,9 @@ func (m *Repository) PostShowLogin(w http.ResponseWriter, r *http.Request) {
 	form.Required("email","password")
 
 	if !form.Valid(){
-		// to do
+		render.Template(w, r, "login.page.tmpl", &models.TemplateData{
+			Form: form,
+		})
 	}
 
 	id, _, err := m.DB.Authenticate(email,password)
@@ -88,6 +92,13 @@ func (m *Repository) PostShowLogin(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/",http.StatusSeeOther)
 
 }
+//logout
+func (m *Repository) Logout(w http.ResponseWriter, r *http.Request) {
+	_ = m.App.Session.Destroy(r.Context())
+	_ = m.App.Session.RenewToken(r.Context())
+
+	http.Redirect(w, r, "user/login", http.StatusSeeOther)
+}
 
 // Home page is the home handler
 func (m *Repository) Home(w http.ResponseWriter, r *http.Request) {
@@ -98,6 +109,36 @@ func (m *Repository) Home(w http.ResponseWriter, r *http.Request) {
 		Form: forms.New(nil),
 	})
 
+}
+func (m *Repository) AdminDashboard(w http.ResponseWriter, r *http.Request) {
+	render.Template(w, r, "admin-dashboard.page.tmpl", &models.TemplateData{
+		Form: forms.New(nil),
+	})
+}
+func (m *Repository) AdminNewReservations(w http.ResponseWriter, r *http.Request) {
+	render.Template(w, r, "admin-new-reservation.page.tmpl", &models.TemplateData{
+		Form: forms.New(nil),
+	})
+}
+func (m *Repository) AdminAllReservations(w http.ResponseWriter, r *http.Request) {
+
+	reservations, err := m.DB.AllReservations()
+	if err !=nil{
+		helpers.ServerError(w, err)
+		return
+	}
+
+	data := make(map[string]interface{})
+	data["reservations"] = reservations
+	render.Template(w, r, "admin-all-reservation.page.tmpl", &models.TemplateData{
+		Form: forms.New(nil),
+		Data: data,
+	})
+}
+func (m *Repository) AdminReservationCalendar(w http.ResponseWriter, r *http.Request) {
+	render.Template(w, r, "admin-reservation-calendar.page.tmpl", &models.TemplateData{
+		Form: forms.New(nil),
+	})
 }
 
 // Reservations page is the major handler
