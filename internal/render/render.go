@@ -7,6 +7,7 @@ import (
 	"html/template"
 	"net/http"
 	"path/filepath"
+	"time"
 
 	"github.com/justinas/nosurf"
 	"github.com/mr-keppy/bookings/internal/config"
@@ -26,10 +27,19 @@ func RenderTemplateTest(w http.ResponseWriter, templ string) {
 	}
 }
 
+var functions = template.FuncMap{
+	"humanDate": HumanDate,
+}
+
 var app *config.AppConfig
 
 func NewRenderer(a *config.AppConfig) {
 	app = a
+}
+
+// return formated date
+func HumanDate(t time.Time) string {
+	return t.Format("2006-01-01")
 }
 
 func AddDefaultData(td *models.TemplateData, r *http.Request) *models.TemplateData {

@@ -41,6 +41,7 @@ type Reservation struct{
 	Room Room
 	CreatedAt time.Time
 	UpdatedAt time.Time
+	Processed int
 }
 
 type RoomRestriction struct{

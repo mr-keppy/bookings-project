@@ -7,6 +7,7 @@ import (
 	"log"
 	"net/http"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/go-chi/chi"
@@ -115,9 +116,21 @@ func (m *Repository) AdminDashboard(w http.ResponseWriter, r *http.Request) {
 		Form: forms.New(nil),
 	})
 }
+
+//show all new reservations
 func (m *Repository) AdminNewReservations(w http.ResponseWriter, r *http.Request) {
+	reservations, err := m.DB.AllNewReservations()
+	if err !=nil{
+		helpers.ServerError(w, err)
+		return
+	}
+
+	data := make(map[string]interface{})
+	data["reservations"] = reservations
+
 	render.Template(w, r, "admin-new-reservation.page.tmpl", &models.TemplateData{
 		Form: forms.New(nil),
+		Data: data,
 	})
 }
 func (m *Repository) AdminAllReservations(w http.ResponseWriter, r *http.Request) {
@@ -135,9 +148,130 @@ func (m *Repository) AdminAllReservations(w http.ResponseWriter, r *http.Request
 		Data: data,
 	})
 }
+func (m *Repository) AdminPostShowReservation(w http.ResponseWriter, r *http.Request) {
+
+	err := r.ParseForm()
+
+	if err!=nil{
+		m.App.Session.Put(r.Context(),"error","can't parse form")
+		return
+	}
+
+	exploded := strings.Split(r.RequestURI,"/")
+
+	id, err := strconv.Atoi(exploded[4])
+	if err!=nil{
+		helpers.ServerError(w, err)
+		return
+	}
+
+	src := exploded[3]
+
+	stringMap := make(map[string]string)
+
+	stringMap["src"] = src
+	res, err := m.DB.GetReservationByID(id)
+	if err!=nil{
+		helpers.ServerError(w, err)
+		return
+	}
+	res.FirstName = r.Form.Get("first_name")
+	res.LastName = r.Form.Get("last_name")
+	res.Email = r.Form.Get("email")
+	res.Phone = r.Form.Get("phone")
+
+	err = m.DB.UpdateReservation(res)
+	if err!=nil{
+		helpers.ServerError(w, err)
+		return
+	}
+
+	m.App.Session.Put(r.Context(), "flash","Changes saved")
+	http.Redirect(w,r,fmt.Sprintf("/admin/reservation-%s",src),http.StatusSeeOther)
+}
+
+func (m *Repository) AdminProcessReservation(w http.ResponseWriter, r *http.Request) {
+	id ,_ := strconv.Atoi(chi.URLParam(r,"id"))
+	src:= chi.URLParam(r, "src")
+
+	_= m.DB.UpdateProcessedForReservation(1,id)
+	m.App.Session.Put(r.Context(),"flash", "Reservation Proessed")
+	http.Redirect(w, r, fmt.Sprintf("/admin/reservation-%s",src), http.StatusSeeOther)
+}
+
+func (m *Repository) AdminDeleteReservation(w http.ResponseWriter, r *http.Request) {
+	id ,_ := strconv.Atoi(chi.URLParam(r,"id"))
+	src:= chi.URLParam(r, "src")
+
+	_= m.DB.DeleteReservation(id)
+	m.App.Session.Put(r.Context(),"flash", "Reservation Deleted")
+	http.Redirect(w, r, fmt.Sprintf("/admin/reservation-%s",src), http.StatusSeeOther)
+}
+func (m *Repository) AdminShowReservation(w http.ResponseWriter, r *http.Request) {
+
+	exploded := strings.Split(r.RequestURI,"/")
+
+	id, err := strconv.Atoi(exploded[4])
+	if err!=nil{
+		helpers.ServerError(w, err)
+		return
+	}
+
+	src := exploded[3]
+
+	stringMap := make(map[string]string)
+
+	stringMap["src"] = src
+
+	res, err := m.DB.GetReservationByID(id)
+	if err!=nil{
+		helpers.ServerError(w, err)
+		return
+	}
+
+	data:= make(map[string]interface{})
+	data["reservation"]= res
+
+	render.Template(w, r, "admin-reservation-show.page.tmpl", &models.TemplateData{
+		Form: forms.New(nil),
+		StringMap: stringMap,
+		Data: data,
+	})
+}
 func (m *Repository) AdminReservationCalendar(w http.ResponseWriter, r *http.Request) {
+
+	now:= time.Now()
+	if(r.URL.Query().Get("y") !=""){
+		year,_:= strconv.Atoi(r.URL.Query().Get("y"))
+		month,_:= strconv.Atoi(r.URL.Query().Get("m"))
+
+		now = time.Date(year, time.Month(month),1,0,0,0,0,time.UTC)
+
+	}
+
+	next:= now.AddDate(0,1,0)
+	last:= now.AddDate(0,-1,0)
+
+	nextMonth:= next.Format("01")
+	nextMonthYear:=next.Format("2001")
+
+	lastMonth:= last.Format("01")
+	lastMonthYear:=last.Format("2001")
+
+	stringMap:= make(map[string]string)
+
+	stringMap["next_month"] = nextMonth
+	stringMap["next_month_year"]= nextMonthYear
+	stringMap["last_month"]=lastMonth
+	stringMap["last_month_year"]=lastMonthYear
+
+	stringMap["this_month"]= now.Format("01")
+	stringMap["this_month_year"] = now.Format("2001")
+
+
 	render.Template(w, r, "admin-reservation-calendar.page.tmpl", &models.TemplateData{
 		Form: forms.New(nil),
+		StringMap: stringMap,
 	})
 }
 

@@ -2,6 +2,8 @@ package main
 
 import (
 	"encoding/gob"
+	"flag"
+	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -32,7 +34,17 @@ func run() (*driver.DB, error){
 	gob.Register(models.RoomRestriction{})
 	gob.Register(models.Room{})
 
-	app.InProduction = false
+	inProduction := *flag.Bool("production",true, "Application is in production")
+	useCache:= *flag.Bool("cache",true, "use template cache")
+	dbName:= flag.String("dbname","bookings","DB Name")
+	dbHost:= flag.String("dbhost","localhost","DB ost")
+	dbUser:= flag.String("dbuser","kishorpadmanabhan","DB User")
+	dbPass:= flag.String("dbpass","","DB Pass")
+	dbPort:= flag.String("dbport","5432","DB port")
+	dbSSL:= flag.String("dbssl","disable","DB SSL")
+
+
+	app.InProduction = *&inProduction
 	mailChan := make(chan models.MailData)
 	app.MailChan = mailChan
 
@@ -52,7 +64,7 @@ func run() (*driver.DB, error){
 
 	//connect to db
 	log.Println("connect to db")
-	db, err := driver.ConnectSQL("host=localhost port=5432 dbname=bookings user=kishorpadmanabhan password=")
+	db, err := driver.ConnectSQL(fmt.Sprintf("host=%s port=%s dbname=%s user=%s password=%s sslmode=%s",*dbHost, *dbPort, *dbName, *dbUser, *dbPass, *dbSSL))
 	if err != nil {
 		log.Fatal("Error while connecting db")
 	}
@@ -66,7 +78,7 @@ func run() (*driver.DB, error){
 	}
 
 	app.TemplateCache = tc
-	app.UseCache = false
+	app.UseCache = *&useCache
 	repo := handlers.NewRepo(&app, db)
 	handlers.NewHandler(repo)
 
